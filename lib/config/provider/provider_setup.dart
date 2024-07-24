@@ -1,3 +1,4 @@
+import 'package:pokedex_flutter_app/domain/repositories/captured_pokemon_repository.dart';
 import 'package:pokedex_flutter_app/presentation/providers/pokemon_details_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
@@ -18,5 +19,8 @@ List<SingleChildWidget> providers = [
   ),
   ChangeNotifierProvider<PokemonDetailProvider>(
     create: (context) => PokemonDetailProvider(context.read<PokemonRepository>()),
+  ),
+  ChangeNotifierProvider<CapturedPokemonRepository>(
+    create: (_) => CapturedPokemonRepository(),
   ),
 ];

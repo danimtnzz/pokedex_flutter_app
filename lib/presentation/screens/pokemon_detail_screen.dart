@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pokedex_flutter_app/domain/entities/pokemon_detail.dart';
+import 'package:pokedex_flutter_app/domain/repositories/captured_pokemon_repository.dart';
+import 'package:pokedex_flutter_app/presentation/widgets/pokemon_detail_content.dart';
 import 'package:provider/provider.dart';
 import 'package:pokedex_flutter_app/presentation/providers/pokemon_details_provider.dart';
 
@@ -11,14 +12,66 @@ class PokemonDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Fetch the pokemon detail when the screen is built
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      Provider.of<PokemonDetailProvider>(context, listen: false)
-          .fetchPokemonDetail(pokemonId);
+      Provider.of<PokemonDetailProvider>(context, listen: false).fetchPokemonDetail(pokemonId);
     });
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Pokemon Details')),
+      appBar: AppBar(
+        title: Consumer<PokemonDetailProvider>(
+          builder: (context, provider, child) {
+            final pokemonDetail = provider.pokemonDetail;
+            return Text(
+              pokemonDetail != null
+                  ? '${pokemonDetail.name[0].toUpperCase()}${pokemonDetail.name.substring(1)}'
+                  : 'Características',
+            );
+          },
+        ),
+        centerTitle: true,
+        actions: [
+          Consumer<PokemonDetailProvider>(
+            builder: (context, provider, child) {
+              final pokemonDetail = provider.pokemonDetail;
+              if (pokemonDetail == null) {
+                return Container();
+              }
+              return FutureBuilder<bool>(
+                future: Provider.of<CapturedPokemonRepository>(context, listen: false).isPokemonCaptured(pokemonId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  }
+                  final isCaptured = snapshot.data ?? false;
+                  return IconButton(
+                    onPressed: () async {
+                      final repository = Provider.of<CapturedPokemonRepository>(context, listen: false);
+                      if (isCaptured) {
+                        await repository.deleteCapturedPokemon(pokemonDetail.id);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('¡${pokemonDetail.name[0].toUpperCase()}${pokemonDetail.name.substring(1)} eliminado de capturados!')),
+                          );
+                        }
+                      } else {
+                        await repository.capturePokemon(pokemonDetail);
+                        if (context.mounted) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(content: Text('¡${pokemonDetail.name[0].toUpperCase()}${pokemonDetail.name.substring(1)} capturado!')),
+                          );
+                        }
+                      }
+                    },
+                    icon: Icon(
+                      isCaptured ? Icons.check : Icons.catching_pokemon,
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       body: _PokemonDetailBody(),
     );
   }
@@ -34,7 +87,7 @@ class _PokemonDetailBody extends StatelessWidget {
         } else if (provider.errorMessage != null) {
           return Center(child: Text(provider.errorMessage!));
         } else if (provider.pokemonDetail != null) {
-          return _PokemonDetailContent(pokemon: provider.pokemonDetail!);
+          return PokemonDetailContent(pokemon: provider.pokemonDetail!);
         } else {
           return const Center(child: Text('No se encontraron detalles de ese Pokemon'));
         }
@@ -43,30 +96,4 @@ class _PokemonDetailBody extends StatelessWidget {
   }
 }
 
-class _PokemonDetailContent extends StatelessWidget {
-  final PokemonDetail pokemon;
 
-  const _PokemonDetailContent({required this.pokemon});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text('ID: ${pokemon.id}'),
-            Text('Name: ${pokemon.name[0].toUpperCase()}${pokemon.name.substring(1)}'),
-            Image.network(pokemon.imageUrl),
-            Text('Height: ${pokemon.height}'),
-            Text('Weight: ${pokemon.weight}'),
-            Text('Types: ${pokemon.types.join(', ')}'),
-            Text('Abilities: ${pokemon.abilities.join(', ')}'),
-            Text('Base Experience: ${pokemon.baseExperience}'),
-            ...pokemon.stats.map((stat) => Text(stat)),
-          ],
-        ),
-      ),
-    );
-  }
-}
