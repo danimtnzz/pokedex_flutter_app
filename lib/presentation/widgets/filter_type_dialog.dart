@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:pokedex_flutter_app/config/theme/pokemon_type_colors.dart';
 
 class FilterTypeDialog extends StatelessWidget {
   final String selectedType;
