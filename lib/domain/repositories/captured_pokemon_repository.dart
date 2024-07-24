@@ -32,17 +32,15 @@ class CapturedPokemonRepository with ChangeNotifier {
       ..baseExperience = pokemonDetail.baseExperience
       ..stats = pokemonDetail.stats;
 
-    final existingPokemon = await isar.capturedPokemons.filter().pokemonIdEqualTo(pokemonDetail.id).findFirst();
-
     await isar.writeTxn(() async {
+      final existingPokemon = await isar.capturedPokemons.filter().pokemonIdEqualTo(pokemonDetail.id).findFirst();
       if (existingPokemon != null) {
         await isar.capturedPokemons.delete(existingPokemon.id);
-        notifyListeners();
-      } else {
-        await isar.capturedPokemons.put(capturedPokemon);
-        notifyListeners();
-      }
+      } 
+      await isar.capturedPokemons.put(capturedPokemon);
     });
+
+    notifyListeners();
   }
 
   Stream<List<CapturedPokemon>> watchAllCapturedPokemons() async* {
@@ -66,5 +64,25 @@ class CapturedPokemonRepository with ChangeNotifier {
     final isar = await _db;
     final existingPokemon = await isar.capturedPokemons.filter().pokemonIdEqualTo(pokemonId).findFirst();
     return existingPokemon != null;
+  }
+
+  Future<Map<String, int>> countPokemonTypes() async {
+    final isar = await _db;
+    return await isar.txn(() async {
+      final pokemons = await isar.capturedPokemons.where().findAll();
+      final typeCounts = <String, int>{};
+
+      for (final pokemon in pokemons) {
+        for (final type in pokemon.types) {
+          if (typeCounts.containsKey(type)) {
+            typeCounts[type] = typeCounts[type]! + 1;
+          } else {
+            typeCounts[type] = 1;
+          }
+        }
+      }
+
+      return typeCounts;
+    });
   }
 }

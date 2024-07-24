@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pokedex_flutter_app/config/provider/provider_setup.dart';
+import 'package:pokedex_flutter_app/config/theme/providers/theme_notifier.dart';
 import 'package:provider/provider.dart';
 import 'config/config.dart';
 
@@ -14,11 +15,15 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: providers,
-      child: MaterialApp.router(
-        routerConfig: appRouter,
-        debugShowCheckedModeBanner: false,
-        title: 'Pokedex App',
-        theme: AppTheme().getTheme(),
+      child: Consumer<ThemeNotifier>(
+        builder: (context, themeNotifier, _) {
+          return MaterialApp.router(
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+            title: 'Pokedex App',
+            theme: AppTheme().getTheme(themeNotifier.themeColor),
+          );
+        },
       ),
     );
   }

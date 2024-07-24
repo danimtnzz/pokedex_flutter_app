@@ -90,6 +90,7 @@ class CapturedViewState extends State<CapturedView> {
                       direction: DismissDirection.endToStart,
                       onDismissed: (direction) {
                         repository.deleteCapturedPokemon(pokemon.pokemonId);
+                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('${pokemon.name[0].toUpperCase()}${pokemon.name.substring(1)} eliminado')),
                         );

@@ -49,6 +49,7 @@ class PokemonDetailScreen extends StatelessWidget {
                       if (isCaptured) {
                         await repository.deleteCapturedPokemon(pokemonDetail.id);
                         if (context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('¡${pokemonDetail.name[0].toUpperCase()}${pokemonDetail.name.substring(1)} eliminado de capturados!')),
                           );
@@ -56,6 +57,7 @@ class PokemonDetailScreen extends StatelessWidget {
                       } else {
                         await repository.capturePokemon(pokemonDetail);
                         if (context.mounted) {
+                          ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(content: Text('¡${pokemonDetail.name[0].toUpperCase()}${pokemonDetail.name.substring(1)} capturado!')),
                           );

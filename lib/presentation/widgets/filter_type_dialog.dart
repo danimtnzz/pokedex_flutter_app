@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pokedex_flutter_app/config/theme/pokemon_type_colors.dart';
 
 class FilterTypeDialog extends StatelessWidget {
   final String selectedType;
   final ValueChanged<String> onTypeSelected;
 
   const FilterTypeDialog({
-    super.key, 
+    super.key,
     required this.selectedType,
     required this.onTypeSelected,
   });
@@ -15,7 +16,7 @@ class FilterTypeDialog extends StatelessWidget {
   Widget build(BuildContext context) {
     final List<String> types = [
       '', // No filter option
-      'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying', 
+      'fire', 'water', 'grass', 'electric', 'ice', 'fighting', 'poison', 'ground', 'flying',
       'psychic', 'bug', 'rock', 'ghost', 'dragon', 'dark', 'steel', 'fairy'
     ];
 
