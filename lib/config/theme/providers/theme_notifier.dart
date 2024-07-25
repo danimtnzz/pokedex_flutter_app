@@ -13,7 +13,6 @@ class ThemeNotifier extends ChangeNotifier {
   Color get themeColor => _themeColor;
 
   Future<void> _init() async {
-    _repository.addListener(_updateThemeColor);
     await _updateThemeColor();
   }
 
@@ -25,19 +24,7 @@ class ThemeNotifier extends ChangeNotifier {
     } else {
       _themeColor = Colors.red; // Default color if no Pokémon are captured
     }
-    if (!isDisposed) {
-      notifyListeners();
-    }
+    notifyListeners();
   }
 
-  bool _isDisposed = false;
-
-  bool get isDisposed => _isDisposed;
-
-  @override
-  void dispose() {
-    _isDisposed = true;
-    _repository.removeListener(_updateThemeColor);
-    super.dispose();
-  }
 }

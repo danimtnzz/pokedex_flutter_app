@@ -3,6 +3,7 @@ import 'package:pokedex_flutter_app/domain/repositories/captured_pokemon_reposit
 import 'package:pokedex_flutter_app/presentation/widgets/pokemon_detail_content.dart';
 import 'package:provider/provider.dart';
 import 'package:pokedex_flutter_app/presentation/providers/pokemon_details_provider.dart';
+import 'package:pokedex_flutter_app/domain/entities/captured_pokemon.dart';
 
 class PokemonDetailScreen extends StatelessWidget {
   static const name = 'pokemon-details';
@@ -55,7 +56,8 @@ class PokemonDetailScreen extends StatelessWidget {
                           );
                         }
                       } else {
-                        await repository.capturePokemon(pokemonDetail);
+                        final capturedPokemon = CapturedPokemon.fromPokemonDetail(pokemonDetail);
+                        await repository.capturePokemon(capturedPokemon);
                         if (context.mounted) {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
@@ -97,5 +99,3 @@ class _PokemonDetailBody extends StatelessWidget {
     );
   }
 }
-
-

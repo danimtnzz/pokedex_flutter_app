@@ -1,18 +1,60 @@
-import 'package:isar/isar.dart';
+import 'package:hive/hive.dart';
+import 'package:pokedex_flutter_app/domain/entities/pokemon_detail.dart';
 
 part 'captured_pokemon.g.dart';
 
-@Collection()
+@HiveType(typeId: 0)
 class CapturedPokemon {
-  Id id = Isar.autoIncrement;
+  @HiveField(0)
+  int pokemonId;
 
-  late int pokemonId;
-  late String name;
-  late String imageUrl;
-  late int height;
-  late int weight;
-  late List<String> types;
-  late List<String> abilities;
-  late int baseExperience;
-  late List<String> stats;
+  @HiveField(1)
+  String name;
+
+  @HiveField(2)
+  String imageUrl;
+
+  @HiveField(3)
+  int height;
+
+  @HiveField(4)
+  int weight;
+
+  @HiveField(5)
+  List<String> types;
+
+  @HiveField(6)
+  List<String> abilities;
+
+  @HiveField(7)
+  int baseExperience;
+
+  @HiveField(8)
+  List<String> stats;
+
+  CapturedPokemon({
+    required this.pokemonId,
+    required this.name,
+    required this.imageUrl,
+    required this.height,
+    required this.weight,
+    required this.types,
+    required this.abilities,
+    required this.baseExperience,
+    required this.stats,
+  });
+
+  factory CapturedPokemon.fromPokemonDetail(PokemonDetail detail) {
+    return CapturedPokemon(
+      pokemonId: detail.id,
+      name: detail.name,
+      imageUrl: detail.imageUrl,
+      height: detail.height,
+      weight: detail.weight,
+      types: detail.types,
+      abilities: detail.abilities,
+      baseExperience: detail.baseExperience,
+      stats: detail.stats,
+    );
+  }
 }

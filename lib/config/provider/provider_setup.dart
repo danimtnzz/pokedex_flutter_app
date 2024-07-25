@@ -8,6 +8,8 @@ import 'package:pokedex_flutter_app/data/repositories/pokemon_repository_impl.da
 import 'package:pokedex_flutter_app/presentation/providers/pokemon_provider.dart';
 import 'package:provider/single_child_widget.dart';
 import 'package:pokedex_flutter_app/domain/repositories/pokemon_repository.dart';
+import 'package:pokedex_flutter_app/data/datasources/captured_pokemon_datasource.dart';
+import 'package:pokedex_flutter_app/data/repositories/captured_pokemon_repository_impl.dart';
 
 List<SingleChildWidget> providers = [
   Provider<PokemonRepository>(
@@ -21,8 +23,11 @@ List<SingleChildWidget> providers = [
   ChangeNotifierProvider<PokemonDetailProvider>(
     create: (context) => PokemonDetailProvider(context.read<PokemonRepository>()),
   ),
+  Provider<CapturedPokemonDataSource>(
+    create: (_) => CapturedPokemonDataSource(),
+  ),
   ChangeNotifierProvider<CapturedPokemonRepository>(
-    create: (_) => CapturedPokemonRepository(),
+    create: (context) => CapturedPokemonRepositoryImpl(context.read<CapturedPokemonDataSource>()),
   ),
   ChangeNotifierProxyProvider<CapturedPokemonRepository, ThemeNotifier>(
     create: (context) => ThemeNotifier(context.read<CapturedPokemonRepository>()),
